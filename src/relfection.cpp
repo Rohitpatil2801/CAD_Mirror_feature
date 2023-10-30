@@ -1,19 +1,16 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 #include <cmath>
 #include <sstream>
-#include "..\headers\Point.h"
-using namespace std;
-void plotPlane(vector<Point>);
-
-vector<Point> readFile()
+#include "..\headers\reflection.h"
+ 
+std::vector<Point> readFile()
 {
-    ifstream in("../STL_files/flowerpot.STL");
-    ofstream out("../Text_files/original.txt");
-    vector<Point> readvector;
-    string s;
+    std::ifstream in("../STL_files/flowerpot.STL");
+    std::ofstream out("../Text_files/original.txt");
+    std::vector<Point> readvector;
+    std::string s;
     std::vector<Point> vertexPoints;
     std::string line;
     while (std::getline(in, line))
@@ -24,65 +21,65 @@ vector<Point> readFile()
             std::string token;
             double x, y, z;
             iss >> token >> x >> y >> z;
-            out << x << " " << y << " " << z << endl;
+            out << x << " " << y << " " << z << std::endl;
             vertexPoints.push_back({x, y, z});
         }
     }
     in.close();
     out.close();
-
+ 
     return vertexPoints;
 }
-
-vector<Point> get_plane(vector<Point> readvector)
+ 
+std::vector<Point> getPlane(std::vector<Point> readvector)
 {
-
+ 
     double vx, vy, vz, px, py, pz;
-    cout << "Enter points on plane";
-
-    cout << "px" << endl;
-    cin >> px;
-
-    cout << "py" << endl;
-    cin >> py;
-
-    cout << "pz" << endl;
-    cin >> pz;
-
-    cout << "Enter the vector points" << endl;
-    cout << "vx" << endl;
-    cin >> vx;
-
-    cout << "vy" << endl;
-    cin >> vy;
-
-    cout << "vz" << endl;
-    cin >> vz;
-
+    std::cout << "Enter points on plane";
+ 
+    std::cout << "px" << std::endl;
+    std::cin >> px;
+ 
+    std::cout << "py" << std::endl;
+    std::cin >> py;
+ 
+    std::cout << "pz" << std::endl;
+    std::cin >> pz;
+ 
+    std::cout << "Enter the vector points" << std::endl;
+    std::cout << "vx" << std::endl;
+    std::cin >> vx;
+ 
+    std::cout << "vy" << std::endl;
+    std::cin >> vy;
+ 
+    std::cout << "vz" << std::endl;
+    std::cin >> vz;
+ 
     Point Plane_points(px, py, pz);
     Point Vector_points(vx, vy, vz);
-
+ 
     readvector.insert(readvector.begin(), Vector_points);
     readvector.insert(readvector.begin() + 1, Plane_points);
-
+ 
     return readvector;
 }
-
-vector<Point> reflect_point(vector<Point> point_vector)
+ 
+std::vector<Point> reflectPoint(std::vector<Point> point_vector)
 {
-
+ 
     const double a = point_vector[0].x();
     const double b = point_vector[0].y();
     const double c = point_vector[0].z();
-
+ 
     const double div = sqrt(pow(a, 2.0) + pow(b, 2.0) + pow(c, 2.0));
-
+ 
     Point normalised_vector(a / div, b / div, c / div);
-
+ 
     double x1 = point_vector[1].x(), y1 = point_vector[1].y(), z1 = point_vector[1].z();
-
-    vector<Point> reflected_shape;
-
+ 
+    std::vector<Point> reflected_shape;
+ 
     for (int i = 2; i < point_vector.size(); i++)
     {
         double tx = point_vector[i].x();
@@ -93,23 +90,32 @@ vector<Point> reflect_point(vector<Point> point_vector)
     }
     return reflected_shape;
 }
-
-// ------------------------------Planer point vector---------------------------------------
+ 
+void plotPlane(std::vector<Point> reflect)
+{
+    std::ofstream out("../Text_files/plane.txt");
+    for (auto i : reflect)
+    {
+        out << i.x() << " " << i.y() << " " << i.z() << std::endl;
+    }
+    out.close();
+}
+ 
 std::vector<Point> writePlane(std::vector<Point> point_vector)
 {
-
+ 
     const double a = point_vector[0].x();
     const double b = point_vector[0].y();
     const double c = point_vector[0].z();
-
+ 
     const double div = sqrt(pow(a, 2.0) + pow(b, 2.0) + pow(c, 2.0));
-
+ 
     Point normalised_vector(a / div, b / div, c / div);
-
+ 
     double x1 = point_vector[1].x(), y1 = point_vector[1].y(), z1 = point_vector[1].z();
-
-    vector<Point> planar_shape;
-
+ 
+    std::vector<Point> planar_shape;
+ 
     for (int i = 2; i < point_vector.size(); i++)
     {
         double tx = point_vector[i].x();
@@ -121,38 +127,14 @@ std::vector<Point> writePlane(std::vector<Point> point_vector)
     plotPlane(planar_shape);
     return planar_shape;
 }
-
-// ------------------------------Plot plane.txt-----------------------
-void plotPlane(vector<Point> reflect)
+ 
+void plot(std::vector<Point> reflect)
 {
-    ofstream out("../Text_files/plane.txt");
+    std::ofstream out("../Text_files/reflection.txt");
     for (auto i : reflect)
     {
-        out << i.x() << " " << i.y() << " " << i.z() << endl;
+ 
+        out << i.x() << " " << i.y() << " " << i.z() << std::endl;
     }
     out.close();
 }
-
-//-----------------------------Plot in reflection.txt---------------
-void plot(vector<Point> reflect)
-{
-    ofstream out("../Text_files/reflection.txt");
-    for (auto i : reflect)
-    {
-
-        out << i.x() << " " << i.y() << " " << i.z() << endl;
-    }
-    out.close();
-}
-//------------------------------Main-----------------------------------------------
-int main()
-{
-    // readStl("flowerpot.stl");
-    vector<Point> one = readFile();
-    vector<Point> second = get_plane(one);
-    writePlane(second);
-    vector<Point> third = reflect_point(second);
-    plot(third);
-    return 0;
-}
-//----------------------------------------------------------------------------------
